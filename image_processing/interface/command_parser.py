@@ -131,7 +131,7 @@ class CommandParser(ConfigManager):
             for action in subparser._actions:
                 if action != 'help':
                     if action.help:
-                        help_out += str(action.help)
+                        help_out += str(action.help) + '\n'
     
         await ctx.send(help_out)
 
@@ -139,7 +139,7 @@ class CommandParser(ConfigManager):
         self, ctx, command_str: str, image_input: Optional[Union[str, Path]] = None
     ) -> ParsedCommand:
         command, args = self.parse_command_string(command_str)
-        if command_str[0] != "image":
+        if command != "image":
             user_effects = {}
         else:
             user_effects = self.handle_effects(args)
@@ -458,7 +458,10 @@ class CommandParser:
                     if action.help:
                         help_out += str(action.help)
 
-        await ctx.send(help_out)
+        if help_out:
+            await ctx.send(help_out)
+        else:
+            await ctx.send("No help messages found??")
 
     async def parse_command(
         self, ctx, command_str: str, image_input: Optional[Union[str, Path]] = None

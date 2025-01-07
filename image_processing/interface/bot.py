@@ -46,39 +46,7 @@ async def on_reaction_add(reaction, user):
             await reaction.message.delete()
 
 '''
-@bot.command(name="image")
-async def image_command(ctx, *args):
-    """Process an image with effects."""
-    try:
-        # Parse command
-        command = await command_parser.parse_command(ctx, f"process {' '.join(args)}")
-
-        await ctx.send("Command returned {type(command)}")
-
-        # Get input image
-        if ctx.message.attachments:
-            attachment = ctx.message.attachments[0]
-            image_bytes = await attachment.read()
-
-        # Process image
-    except Exception as e:
-        await ctx.send(f"Error selecting image, process_command: {str(e)}")
-        return
-
-    try:
-        my_params = {}
-        processor = BaseImageProcessor(image_bytes)
-        e_processor = EffectProcessor(processor.original_image)
-        if len(command.effects) > 0:
-            for effect_name, params in command.effects:
-                e_processor.apply_effect(effect_name, params)
-                my_params[effect_name] = params
-
-        # Save and send result
-        my_image = e_processor.get_current_image()
-
-    except Exception as e:
-        await ctx.send(f"Error processings Effects, {str(e)}")
+    # Image storing code for image command
 
     try:
         # Store in repository if configured
@@ -134,7 +102,7 @@ async def image_command(ctx, *args):
             await _handle_static_image(ctx, parsed)
 
     except Exception as e:
-        # self.logger.error(f"Error processing image command: {str(e)}", exc_info=True)
+        logger.error(f"Error processing image command: {str(e)}", exc_info=True)
         await ctx.send(f"Error processing image, image_command: {str(e)}")
 
 
@@ -339,22 +307,22 @@ async def ascii_command(ctx, *args):
         print("Got to Processor")
 
         # Generate ASCII art
-        try:
-            cols=parsed.ascii_params.cols
-        except Exception:
-            cols=configs.ascii.default_cols
+        processor = ASCIIProcessor(image)
 
-        try:
-            scale=parsed.ascii_params.cols
-        except Exception:
-            scale=configs.ascii.default_scale
-        processor = ASCIIProcessor(BytesIO(image_bytes))
+        print("ASCII Processor created")
+
         ascii_image = \
-            processor.convert_to_ascii_image(image,
-                                             cols=cols,
-                                             scale=scale,
-                                             moreLevels=True,
-                                             )
+            processor.convert_to_ascii_image(
+                                            image,
+                                            cols=150,
+                                            scale=0.5,
+                                            moreLevels=True,
+                                            background_color=(0, 0, 0),
+                                            text_color=(255, 255, 255)
+)
+
+# Save with specific format
+        ascii_image.save('debug_output.png', 'PNG')
 
         # Create and save both text and image versions
         # ascii_image = processor.create_gif(ascii_art)
@@ -383,7 +351,7 @@ async def ascii_command(ctx, *args):
 @bot.command(name="help")
 async def help_command(ctx):
     """Show help information."""
-    await ctx.send(await command_parser.format_help(ctx))
+    await command_parser.format_help(ctx)
 
 
 @bot.command(name="examples")

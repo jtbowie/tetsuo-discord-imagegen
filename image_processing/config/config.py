@@ -1,9 +1,8 @@
-import json
 import logging
 import os
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Tuple, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 import yaml
 from dotenv import load_dotenv
@@ -60,9 +59,11 @@ effect_order = [
 ]
 
 
+load_dotenv()
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 IMAGES_FOLDER = "images"
 INPUT_IMAGE = "input.png"
+
 
 def get_effect_order():
     return effect_order
@@ -83,8 +84,6 @@ class ConfigManager:
         self.logger = logging.getLogger("ConfigManager")
         self.config_dir = Path(config_dir)
         self.config_dir.mkdir(parents=True, exist_ok=True)
-
-        load_dotenv()
 
         # Initialize configuration objects
         self.effect_params = self._build_effect_argument()

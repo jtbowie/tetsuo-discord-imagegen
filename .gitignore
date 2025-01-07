@@ -153,3 +153,5 @@ images/*
 !images/.gitkeep
 activate.bat
 test_imi.bat
+config.json
+old/*
